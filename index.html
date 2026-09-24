@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cafe - Immersive South Indian Experience</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        terracotta: {
+                            DEFAULT: '#C85A32',
+                            dark: '#A3421D',
+                            light: '#E07A5F'
+                        },
+                        banana: {
+                            DEFAULT: '#4A7C59',
+                            light: '#EAF4EC',
+                            accent: '#81B29A'
+                        },
+                        cream: '#FDFBF7',
+                        espresso: '#2B2B2B',
+                        brass: '#D4AF37'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFBF7;
+            color: #2B2B2B;
+            overflow-x: hidden;
+            perspective: 1200px;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* 3D Card and Tilt Styles */
+        .card-3d {
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-style: preserve-3d;
+        }
+        .card-3d:hover {
+            transform: translateY(-8px) rotateX(4deg) rotateY(-4deg);
+            box-shadow: 0 25px 50px -12px rgba(200, 90, 50, 0.25);
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(1deg); }
+        }
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        .floating-element-delayed {
+            animation: float 7s ease-in-out infinite 2s;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FDFBF7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C85A32;
+            border-radius: 4px;
+        }
+
+        .hero-pattern {
+            background-color: #232323;
+            background-image: radial-gradient(#C85A32 0.8px, transparent 0.8px), radial-gradient(#C85A32 0.8px, #232323 0.8px);
+            background-size: 32px 32px;
+            background-position: 0 0, 16px 16px;
+        }
+    </style>
+</head>
+<body class="bg-cream text-espresso antialiased min-h-screen flex flex-col justify-between">
+
+    <header class="sticky top-0 z-50 bg-cream/95 backdrop-blur-md border-b border-brass/30 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer group" onclick="switchPage('home')">
+                    <div class="w-12 h-12 rounded-2xl bg-terracotta flex items-center justify-center text-cream shadow-lg border-2 border-brass transform group-hover:rotate-12 transition duration-300">
+                        <i class="fa-solid fa-mug-hot text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-serif font-bold text-espresso tracking-wide">My Cafe</span>
+                        <span class="block text-xs uppercase tracking-widest text-terracotta font-semibold">South Indian 3D Heritage</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <button onclick="switchPage('home')" id="nav-home" class="nav-link text-terracotta font-semibold transition hover:text-terracotta-dark pb-1 border-b-2 border-terracotta">Home</button>
+                    <button onclick="switchPage('about')" id="nav-about" class="nav-link text-espresso font-medium transition hover:text-terracotta pb-1 border-b-2 border-transparent">About Us</button>
+                    <button onclick="switchPage('menu')" id="nav-menu" class="nav-link text-espresso font-medium transition hover:text-terracotta pb-1 border-b-2 border-transparent">Menu</button>
+                    <button onclick="switchPage('contact')" id="nav-contact" class="nav-link text-espresso font-medium transition hover:text-terracotta pb-1 border-b-2 border-transparent">Contact & Location</button>
+                </nav>
+
+                <!-- Right Action: Table Order / Cart Button -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button onclick="openCartModal()" class="relative bg-banana text-cream px-5 py-2.5 rounded-full font-medium shadow-lg hover:bg-banana/90 transition transform hover:scale-105 flex items-center space-x-2">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span>My Order</span>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-terracotta text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="flex md:hidden items-center space-x-3">
+                    <button onclick="openCartModal()" class="relative bg-banana text-cream p-2.5 rounded-full shadow">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <span id="cart-badge-mobile" class="absolute -top-1 -right-1 bg-terracotta text-white text-xs w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="text-espresso p-2 focus:outline-none">
+                        <i id="mobile-menu-icon" class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cream border-b border-brass/20 px-4 pt-2 pb-6 space-y-3">
+            <button onclick="switchPage('home'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded text-espresso hover:bg-brass/10 font-medium">Home</button>
+            <button onclick="switchPage('about'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded text-espresso hover:bg-brass/10 font-medium">About Us</button>
+            <button onclick="switchPage('menu'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded text-espresso hover:bg-brass/10 font-medium">Menu</button>
+            <button onclick="switchPage('contact'); toggleMobileMenu();" class="block w-full text-left py-2 px-3 rounded text-espresso hover:bg-brass/10 font-medium">Contact & Location</button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+
+        <!-- ================= PAGE 1: HOME ================= -->
+        <div id="page-home" class="page-section">
+            <!-- Hero Banner -->
+            <section class="relative hero-pattern text-cream py-24 lg:py-36 overflow-hidden">
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6 text-center lg:text-left">
+                        <span class="inline-flex items-center space-x-2 bg-terracotta/30 border border-terracotta text-brass px-4 py-2 rounded-full text-sm font-semibold tracking-wide floating-element">
+                            <i class="fa-solid fa-leaf text-banana-accent"></i>
+                            <span>Immersive South Indian Experience</span>
+                        </span>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold leading-tight">
+                            Heritage Flavors in a <span class="text-terracotta">3D Immersive</span> Cafe Space
+                        </h1>
+                        <p class="text-lg text-cream/80 max-w-xl mx-auto lg:mx-0">
+                            Discover crispy ghee roast dosas, frothy Kumbakonam degree filter coffee, and ancestral spice blends in a warm, artistic ambiance.
+                        </p>
+                        <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
+                            <button onclick="switchPage('menu')" class="bg-terracotta hover:bg-terracotta-dark text-cream font-semibold px-8 py-4 rounded-2xl shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center space-x-2">
+                                <span>Explore 3D Menu</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button onclick="switchPage('contact')" class="bg-transparent border-2 border-brass text-cream hover:bg-brass/10 font-semibold px-8 py-4 rounded-2xl transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <span>Reserve a Table</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3D Card Showcase Element -->
+                    <div class="relative flex justify-center">
+                        <div class="relative w-72 h-72 sm:w-96 sm:h-96 rounded-3xl overflow-hidden border-4 border-brass shadow-2xl bg-terracotta/20 card-3d floating-element">
+                            <img src="https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?auto=format&fit=crop&w=600&q=80" alt="South Indian Delicacy" class="w-full h-full object-cover transform hover:scale-105 transition duration-700" onerror="this.src='https://placehold.co/600x600/C85A32/FDFBF7?text=South+Indian+Delight'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-espresso/80 via-transparent to-transparent flex items-end p-6">
+                                <div class="text-cream">
+                                    <span class="bg-terracotta text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Chef's Pick</span>
+                                    <h3 class="text-xl font-serif font-bold mt-2">Special Masala Dosa Platter</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Floating Badge 2 -->
+                        <div class="absolute -bottom-6 -left-6 bg-cream text-espresso px-6 py-4 rounded-2xl shadow-2xl border border-brass flex items-center space-x-3 floating-element-delayed">
+                            <div class="text-terracotta text-2xl"><i class="fa-solid fa-award"></i></div>
+                            <div>
+                                <p class="text-xs text-gray-500 font-medium">Top Rated</p>
+                                <p class="text-sm font-bold font-serif">Authentic Brass Brew</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="text-terracotta font-semibold uppercase tracking-widest text-sm">Culinary Artistry</span>
+                    <h2 class="text-3xl sm:text-4xl font-serif font-bold text-espresso mt-2">Signature 3D Delicacies</h2>
+                    <p class="text-gray-600 mt-4">Hover over our interactive cards to experience depth and richness crafted with traditional care.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-lg border border-brass/20 card-3d flex flex-col">
+                        <div class="h-60 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=500&q=80" alt="Ghee Roast" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/500x350/EAF4EC/4A7C59?text=Ghee+Roast'">
+                            <span class="absolute top-4 right-4 bg-banana text-cream text-xs font-bold px-3 py-1 rounded-full">Bestseller</span>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow justify-between">
+                            <div>
+                                <div class="flex justify-between items-baseline mb-2">
+                                    <h3 class="text-xl font-serif font-bold">Mysore Ghee Roast Dosa</h3>
+                                    <span class="text-terracotta font-bold text-lg">₹180</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-6">Crispy fermented crepe smeared with red chili chutney and roasted in pure desi ghee.</p>
+                            </div>
+                            <button onclick="quickAddToCart('Mysore Ghee Roast Dosa', 180)" class="w-full bg-banana/10 hover:bg-banana text-banana hover:text-cream font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add to Order</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-lg border border-brass/20 card-3d flex flex-col">
+                        <div class="h-60 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80" alt="Filter Coffee" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/500x350/EAF4EC/4A7C59?text=Filter+Coffee'">
+                            <span class="absolute top-4 right-4 bg-brass text-espresso text-xs font-bold px-3 py-1 rounded-full">Traditional</span>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow justify-between">
+                            <div>
+                                <div class="flex justify-between items-baseline mb-2">
+                                    <h3 class="text-xl font-serif font-bold">Kumbakonam Degree Coffee</h3>
+                                    <span class="text-terracotta font-bold text-lg">₹70</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-6">Decoction brewed with chicory and rich cow milk, frothed in traditional brass dabarah.</p>
+                            </div>
+                            <button onclick="quickAddToCart('Kumbakonam Degree Coffee', 70)" class="w-full bg-banana/10 hover:bg-banana text-banana hover:text-cream font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add to Order</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-lg border border-brass/20 card-3d flex flex-col">
+                        <div class="h-60 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80" alt="Paniyaram" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/500x350/EAF4EC/4A7C59?text=Paniyaram'">
+                            <span class="absolute top-4 right-4 bg-terracotta text-cream text-xs font-bold px-3 py-1 rounded-full">Chef Special</span>
+                        </div>
+                        <div class="p-6 flex flex-col flex-grow justify-between">
+                            <div>
+                                <div class="flex justify-between items-baseline mb-2">
+                                    <h3 class="text-xl font-serif font-bold">Chettinad Kuzhi Paniyaram</h3>
+                                    <span class="text-terracotta font-bold text-lg">₹140</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-6">Crispy outside, fluffy inside dumpling spheres served with spicy tomato chutney.</p>
+                            </div>
+                            <button onclick="quickAddToCart('Chettinad Kuzhi Paniyaram', 140)" class="w-full bg-banana/10 hover:bg-banana text-banana hover:text-cream font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add to Order</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-14">
+                    <button onclick="switchPage('menu')" class="inline-flex items-center space-x-2 text-terracotta font-bold hover:text-terracotta-dark text-lg group">
+                        <span>Explore Full Menu & Categories</span>
+                        <i class="fa-solid fa-arrow-right transform group-hover:translate-x-2 transition"></i>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= PAGE 2: ABOUT US ================= -->
+        <div id="page-about" class="page-section hidden">
+            <section class="bg-espresso text-cream py-20 text-center relative overflow-hidden">
+                <div class="max-w-4xl mx-auto px-4 relative z-10 space-y-4">
+                    <span class="text-brass font-semibold uppercase tracking-widest text-sm">Our Heritage</span>
+                    <h1 class="text-4xl sm:text-5xl font-serif font-bold">Roots in South India, Wings in Modern Cafe Culture</h1>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                        My Cafe blends ancestral recipes with immersive architectural design to create an unforgettable dining sanctuary.
+                    </p>
+                </div>
+            </section>
+
+            <section class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-6">
+                        <span class="text-terracotta font-semibold uppercase tracking-widest text-sm">Our Philosophy</span>
+                        <h2 class="text-3xl font-serif font-bold text-espresso">Preserving Ancestral Flavors</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            Every batch of chutney, every slow-ground sambar powder, and every crisp dosa follows time-tested traditions handed down through generations of South Indian home cooks.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            We invite you to sit back in our warm, brass-accented environment and savor the richness of true South Indian hospitality.
+                        </p>
+                    </div>
+                    <div class="bg-banana/20 p-8 rounded-3xl border border-banana/30 card-3d">
+                        <h3 class="text-2xl font-serif font-bold text-espresso mb-6 flex items-center space-x-3">
+                            <i class="fa-solid fa-heart text-terracotta"></i>
+                            <span>The My Cafe Pillars</span>
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-terracotta text-cream p-3 rounded-2xl shadow"><i class="fa-solid fa-seedling text-lg"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-espresso">Organic & Fresh</h4>
+                                    <p class="text-gray-600 text-sm">Locally sourced grains with zero artificial additives.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-banana text-cream p-3 rounded-2xl shadow"><i class="fa-solid fa-mug-hot text-lg"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-espresso">Traditional Brews</h4>
+                                    <p class="text-gray-600 text-sm">Authentic Kumbakonam degree filter coffee served fresh.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= PAGE 3: MENU ================= -->
+        <div id="page-menu" class="page-section hidden">
+            <section class="bg-banana/10 py-16 text-center border-b border-banana/20">
+                <div class="max-w-4xl mx-auto px-4 space-y-3">
+                    <span class="text-terracotta font-semibold uppercase tracking-widest text-sm">Taste of the South</span>
+                    <h1 class="text-4xl font-serif font-bold text-espresso">Interactive 3D Menu</h1>
+                    <p class="text-gray-600">Browse our specialties and build your table order instantly.</p>
+                </div>
+            </section>
+
+            <section class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Category Filters -->
+                <div class="flex flex-wrap justify-center gap-3 mb-12">
+                    <button onclick="filterMenu('all')" id="filter-all" class="menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-terracotta text-cream shadow">All Items</button>
+                    <button onclick="filterMenu('tiffins')" id="filter-tiffins" class="menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-white text-espresso border border-gray-300 hover:border-terracotta">Tiffins & Breakfast</button>
+                    <button onclick="filterMenu('dosas')" id="filter-dosas" class="menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-white text-espresso border border-gray-300 hover:border-terracotta">Dosas & Uttapams</button>
+                    <button onclick="filterMenu('beverages')" id="filter-beverages" class="menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-white text-espresso border border-gray-300 hover:border-terracotta">Filter Coffee & Drinks</button>
+                    <button onclick="filterMenu('sweets')" id="filter-sweets" class="menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-white text-espresso border border-gray-300 hover:border-terracotta">Sweet Treats</button>
+                </div>
+
+                <!-- Menu Items Grid -->
+                <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Dynamic Items Rendered Here -->
+                </div>
+            </section>
+        </div>
+
+        <!-- ================= PAGE 4: CONTACT & LOCATION ================= -->
+        <div id="page-contact" class="page-section hidden">
+            <section class="bg-espresso text-cream py-16 text-center">
+                <div class="max-w-4xl mx-auto px-4 space-y-3">
+                    <span class="text-brass font-semibold uppercase tracking-widest text-sm">Reach Out</span>
+                    <h1 class="text-4xl font-serif font-bold">Visit My Cafe or Book Your Table</h1>
+                    <p class="text-gray-300">We are ready to welcome you with warm filter coffee and authentic hospitality.</p>
+                </div>
+            </section>
+
+            <section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Info Box -->
+                    <div class="space-y-8">
+                        <div class="bg-white p-8 rounded-3xl shadow-lg border border-brass/20 space-y-6 card-3d">
+                            <h3 class="text-2xl font-serif font-bold text-espresso">Cafe Details</h3>
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-terracotta/10 text-terracotta p-3 rounded-2xl"><i class="fa-solid fa-location-dot text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-espresso">Address</h4>
+                                    <p class="text-gray-600 text-sm mt-1">45, Heritage Palm Avenue, Near South Square, City Center</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-banana/10 text-banana p-3 rounded-2xl"><i class="fa-solid fa-clock text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-espresso">Hours</h4>
+                                    <p class="text-gray-600 text-sm mt-1">Monday – Sunday: 7:00 AM – 10:00 PM</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-brass/10 text-espresso p-3 rounded-2xl"><i class="fa-solid fa-phone text-xl"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-espresso">Phone</h4>
+                                    <p class="text-gray-600 text-sm mt-1">+91 98765 43210</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Form -->
+                    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-lg border border-brass/20 card-3d">
+                        <h3 class="text-2xl font-serif font-bold text-espresso mb-6">Table Reservation Form</h3>
+                        <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-espresso mb-2">Your Name</label>
+                                <input type="text" id="form-name" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-terracotta focus:outline-none bg-cream/50" placeholder="Ananya Sharma">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-espresso mb-2">Email</label>
+                                    <input type="email" id="form-email" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-terracotta focus:outline-none bg-cream/50" placeholder="ananya@example.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-espresso mb-2">Phone</label>
+                                    <input type="tel" id="form-phone" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-terracotta focus:outline-none bg-cream/50" placeholder="+91 9876543210">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-terracotta hover:bg-terracotta-dark text-cream font-semibold py-3.5 rounded-xl shadow-lg transition">
+                                Confirm Reservation Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Cart Modal Drawer -->
+    <div id="cart-modal" class="fixed inset-0 z-50 bg-espresso/60 backdrop-blur-sm hidden flex justify-end">
+        <div class="bg-cream w-full max-w-md h-full shadow-2xl flex flex-col justify-between transform transition-transform duration-300">
+            <div class="p-6 border-b border-brass/30 flex justify-between items-center bg-white">
+                <h3 class="text-xl font-serif font-bold text-espresso flex items-center space-x-2">
+                    <i class="fa-solid fa-basket-shopping text-terracotta"></i>
+                    <span>Your Table Order</span>
+                </h3>
+                <button onclick="closeCartModal()" class="text-gray-400 hover:text-espresso p-2">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div id="cart-items-container" class="p-6 overflow-y-auto flex-grow space-y-4">
+                <!-- Cart Items Rendered Here -->
+            </div>
+            <div class="p-6 border-t border-brass/30 bg-white space-y-4">
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span class="text-espresso">Total Amount:</span>
+                    <span id="cart-total-price" class="text-terracotta">₹0</span>
+                </div>
+                <button onclick="checkoutOrder()" class="w-full bg-banana hover:bg-banana/90 text-cream font-semibold py-3.5 rounded-xl shadow transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Place Order to Table</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="notification-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-32 opacity-0 transition-all duration-300 bg-espresso text-cream px-6 py-3.5 rounded-2xl shadow-2xl border border-brass flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-banana-accent text-xl"></i>
+        <span id="toast-message" class="font-medium text-sm">Item added to your order!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-espresso text-cream py-16 border-t border-brass/30 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div class="space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-terracotta flex items-center justify-center text-cream border border-brass">
+                        <i class="fa-solid fa-mug-hot"></i>
+                    </div>
+                    <span class="text-xl font-serif font-bold">My Cafe</span>
+                </div>
+                <p class="text-gray-400 text-sm">Bringing the authentic warmth and heritage flavors of South India to your everyday cafe moments.</p>
+            </div>
+            <div>
+                <h4 class="font-serif font-bold text-lg mb-4 text-brass">Quick Links</h4>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li><button onclick="switchPage('home')" class="hover:text-terracotta transition">Home</button></li>
+                    <li><button onclick="switchPage('about')" class="hover:text-terracotta transition">About Us</button></li>
+                    <li><button onclick="switchPage('menu')" class="hover:text-terracotta transition">Menu</button></li>
+                    <li><button onclick="switchPage('contact')" class="hover:text-terracotta transition">Contact & Location</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-serif font-bold text-lg mb-4 text-brass">Specialties</h4>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li>Kumbakonam Filter Coffee</li>
+                    <li>Mysore Ghee Roast Dosa</li>
+                    <li>Kuzhi Paniyaram</li>
+                    <li>Elaneer Payasam</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-serif font-bold text-lg mb-4 text-brass">Connect With Us</h4>
+                <p class="text-sm text-gray-300 mb-4">Follow us for daily cafe specials.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-terracotta transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-terracotta transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-cream/10 flex items-center justify-center hover:bg-terracotta transition"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-cream/10 text-center text-xs text-gray-400">
+            &copy; 2026 My Cafe - South Indian Heritage Experience. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        const menuItems = [
+            { id: 1, name: "Mysore Ghee Roast Dosa", category: "dosas", price: 180, tag: "Bestseller", desc: "Crispy crepe smeared with red chili chutney and roasted in pure ghee.", img: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "Kumbakonam Degree Coffee", category: "beverages", price: 70, tag: "Traditional", desc: "Decoction brewed with chicory and rich cow milk in brass dabarah.", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "Chettinad Kuzhi Paniyaram", category: "tiffins", price: 140, tag: "Chef Special", desc: "Savory dumpling spheres made from seasoned idli batter.", img: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "Madurai Jigarthanda", category: "beverages", price: 120, tag: "Sweet", desc: "Legendary cooling dessert with almond gum and sarsaparilla syrup.", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "Podi Idli Platter", category: "tiffins", price: 130, tag: "Vegan", desc: "Mini idlis tossed in gun-powder spice and gingelly oil.", img: "https://images.unsplash.com/photo-1514845580036-7c98075775f0?auto=format&fit=crop&w=500&q=80" },
+            { id: 6, name: "Elaneer Payasam", category: "sweets", price: 150, tag: "Gluten-Free", desc: "Delicate kheer crafted with tender coconut pulp and rich milk.", img: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        let cart = [];
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                btn.classList.remove('text-terracotta', 'border-terracotta', 'font-semibold');
+                btn.classList.add('text-espresso', 'border-transparent', 'font-medium');
+            });
+            const activeNav = document.getElementById(`nav-${pageId}`);
+            if (activeNav) {
+                activeNav.classList.remove('text-espresso', 'border-transparent', 'font-medium');
+                activeNav.classList.add('text-terracotta', 'border-terracotta', 'font-semibold');
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function renderMenu(category = 'all') {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+            const filtered = category === 'all' ? menuItems : menuItems.filter(item => item.category === category);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-3xl overflow-hidden shadow-lg border border-brass/25 card-3d flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="h-60 overflow-hidden relative">
+                        <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/500x350/EAF4EC/4A7C59?text=South+Indian'">
+                        <span class="absolute top-4 right-4 bg-terracotta text-cream text-xs font-bold px-3 py-1 rounded-full">${item.tag}</span>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-between">
+                        <div>
+                            <div class="flex justify-between items-baseline mb-2">
+                                <h3 class="text-xl font-serif font-bold text-espresso">${item.name}</h3>
+                                <span class="text-terracotta font-bold text-lg">₹${item.price}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-6">${item.desc}</p>
+                        </div>
+                        <button onclick="addToCart('${item.name}', ${item.price})" class="w-full bg-banana/10 hover:bg-banana text-banana hover:text-cream font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add to Order</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterMenu(category) {
+            document.querySelectorAll('.menu-filter-btn').forEach(btn => {
+                btn.className = 'menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-white text-espresso border border-gray-300 hover:border-terracotta';
+            });
+            const activeBtn = document.getElementById(`filter-${category}`);
+            if (activeBtn) {
+                activeBtn.className = 'menu-filter-btn px-6 py-2.5 rounded-full font-medium transition bg-terracotta text-cream shadow';
+            }
+            renderMenu(category);
+        }
+
+        function addToCart(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ name, price, qty: 1 });
+            }
+            updateCartUI();
+            showToast(`Added ${name} to your table order!`);
+        }
+
+        function quickAddToCart(name, price) {
+            addToCart(name, price);
+        }
+
+        function updateCartUI() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge').innerText = totalQty;
+            document.getElementById('cart-badge-mobile').innerText = totalQty;
+
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400 space-y-3">
+                        <i class="fa-solid fa-basket-shopping text-4xl text-brass"></i>
+                        <p class="text-sm">Your order list is empty. Explore our menu!</p>
+                    </div>
+                `;
+                document.getElementById('cart-total-price').innerText = '₹0';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price * item.qty;
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center bg-cream/50 p-3 rounded-2xl border border-brass/20';
+                row.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-sm text-espresso">${item.name}</h4>
+                        <p class="text-xs text-terracotta font-semibold">₹${item.price} × ${item.qty}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="decrementQty(${index})" class="w-7 h-7 bg-white rounded-full border border-gray-300 text-xs font-bold">-</button>
+                        <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="incrementQty(${index})" class="w-7 h-7 bg-white rounded-full border border-gray-300 text-xs font-bold">+</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            document.getElementById('cart-total-price').innerText = `₹${total}`;
+        }
+
+        function incrementQty(index) {
+            cart[index].qty += 1;
+            updateCartUI();
+        }
+
+        function decrementQty(index) {
+            cart[index].qty -= 1;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function openCartModal() {
+            document.getElementById('cart-modal').classList.remove('hidden');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.add('hidden');
+        }
+
+        function checkoutOrder() {
+            if (cart.length === 0) {
+                showToast('Please add items to your order first!', 'fa-circle-exclamation');
+                return;
+            }
+            showToast('Table order placed successfully! Kitchen is preparing your food.', 'fa-circle-check');
+            cart = [];
+            updateCartUI();
+            closeCartModal();
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('form-name').value;
+            showToast(`Thank you ${name}! Your table reservation request has been confirmed.`);
+            document.getElementById('contact-form').reset();
+        }
+
+        function showToast(message, iconClass = 'fa-circle-check') {
+            const toast = document.getElementById('notification-toast');
+            const msg = document.getElementById('toast-message');
+            const icon = document.getElementById('toast-icon');
+
+            msg.innerText = message;
+            icon.className = `fa-solid ${iconClass} text-banana-accent text-xl`;
+
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3500);
+        }
+
+        window.onload = function() {
+            renderMenu('all');
+        }
+    </script>
+</body>
+</html>
